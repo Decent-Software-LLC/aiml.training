@@ -1,0 +1,33 @@
+{{ define "main" }}
+  <div class="mx-auto flex max-w-screen-xl">
+    {{ partial "sidebar.html" (dict "context" . "disableSidebar" true "displayPlaceholder" true) }}
+    <article class="w-full break-words flex min-h-[calc(100vh-var(--navbar-height))] min-w-0 justify-center pb-8 pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main class="w-full min-w-0 max-w-6xl px-6 pt-4 md:px-12">
+        <div class="flex flex-col items-start gap-2 py-16">
+          <p class="text-6xl font-bold text-primary-600 dark:text-primary-400">404</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            This page doesn't exist
+          </h1>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            The page you're looking for was moved, renamed, or never shipped.
+            The tutorials are the real content here — start there.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href="/docs/tutorials/"
+              class="font-medium cursor-pointer px-6 py-3 text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 rounded-full text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            >
+              Browse tutorials
+            </a>
+            <a
+              href="/"
+              class="font-medium cursor-pointer px-6 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-gray-600 rounded-full text-center"
+            >
+              Back to home
+            </a>
+          </div>
+        </div>
+      </main>
+    </article>
+  </div>
+{{ end }}

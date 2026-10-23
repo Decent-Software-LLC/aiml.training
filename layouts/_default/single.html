@@ -1,0 +1,25 @@
+{{ define "main" }}
+  <div class="mx-auto flex max-w-screen-xl">
+    {{ partial "sidebar.html" (dict "context" . "disableSidebar" true "displayPlaceholder" true) }}
+    {{ partial "toc.html" . }}
+    <article class="w-full break-words flex min-h-[calc(100vh-var(--navbar-height))] min-w-0 justify-center pb-8 pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main class="w-full min-w-0 max-w-6xl px-6 pt-4 md:px-12">
+        <!-- Branded header (matches the landing page) -->
+        {{ partial "aiml-header.html" (dict
+          "badge" "About"
+          "title" "What aiml.training is"
+          "lead" (.Params.headerLead | default "A small, independent library of practical AI/ML tutorials for working engineers.")
+        ) }}
+
+        <div class="content mt-8">
+          {{ .Content }}
+        </div>
+
+        <!-- Email capture -->
+        <div class="mt-16">
+          {{ partial "aiml-email-capture.html" . }}
+        </div>
+      </main>
+    </article>
+  </div>
+{{ end }}

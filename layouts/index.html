@@ -1,0 +1,110 @@
+{{ define "main" }}
+  <div class="mx-auto flex max-w-screen-xl">
+    {{ partial "sidebar.html" (dict "context" . "disableSidebar" true) }}
+    <div class="w-full break-words flex flex-col min-h-[calc(100vh-var(--navbar-height))] min-w-0 justify-start pb-8 pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+
+      <!-- New-tutorial announcement banner (sits above the hero) -->
+      <section class="flex max-w-[90rem] flex-col items-start gap-2 px-6 sm:px-4 pt-8 md:pt-12 not-prose">
+        {{ partial "aiml-new-tutorial-banner.html" . }}
+      </section>
+
+      <!-- Hero -->
+      <section class="flex max-w-[90rem] flex-col items-start gap-2 px-6 sm:px-4 pt-4">
+        <a
+          href="/docs/tutorials/"
+          class="inline-flex items-center rounded-full gap-2 px-3 py-1 text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-neutral-800 dark:border-neutral-800 border hover:border-gray-400 dark:hover:border-gray-600"
+        >
+          <div class="w-2 h-2 rounded-full bg-primary-400"></div>
+          <span>Code-first · Version-pinned · Single-GPU</span>
+          {{- partial "utils/icon" (dict "name" "arrow-circle-right" "attributes" "height=14") -}}
+        </a>
+        <h1
+          class="text-4xl font-bold leading-tight tracking-tight md:text-5xl mt-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400"
+        >
+          Practical LLM engineering<br class="sm:block hidden" />on one 12&nbsp;GB GPU
+        </h1>
+        <p class="mt-4 text-xl text-gray-600 dark:text-gray-400">
+          End-to-end guides for working engineers — dataset to a load-tested,
+          OpenAI-compatible endpoint. Every run on a real RTX&nbsp;3080&nbsp;Ti,
+          every number reported from the run itself: VRAM, throughput, and the
+          failure modes included.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="/docs/tutorials/"
+            class="font-medium cursor-pointer px-6 py-3 text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 rounded-full text-center mr-2 mb-2 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          >
+            Read the tutorials
+          </a>
+          <a
+            href="/docs/tutorials/lora-fine-tuning-qwen3.5-4b/"
+            class="font-medium cursor-pointer px-6 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-800 hover:border-gray-400 dark:hover:border-gray-600 rounded-full text-center mb-2"
+          >
+            Start with the LoRA fine-tune
+          </a>
+        </div>
+      </section>
+
+      <!-- Tutorials -->
+      <section class="flex max-w-[90rem] flex-col items-start gap-2 px-6 sm:px-4 pt-8 pb-8">
+        <h2 class="mt-12 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-400">
+          The pipeline
+        </h2>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+          Three guides, one flow: fine-tune, serve, prove it.
+        </p>
+        <div class="mt-6 w-full">
+          {{ partial "aiml-tutorial-cards.html" (dict "mode" "landing") }}
+        </div>
+      </section>
+
+      <!-- Email capture (primary conversion CTA, right after the tutorials) -->
+      <section class="flex max-w-[90rem] flex-col items-start gap-2 px-6 sm:px-4 pb-8">
+        <div class="w-full">
+          {{ partial "aiml-email-capture.html" . }}
+        </div>
+      </section>
+
+      <!-- Principles -->
+      <section class="flex max-w-[90rem] flex-col items-start gap-2 px-6 sm:px-4 pb-8">
+        <h2 class="mt-4 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-400">
+          How these tutorials are built
+        </h2>
+        <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-4 w-full not-prose">
+          {{ template "aiml-feature-card" (dict
+            "title" "Version-pinned"
+            "subtitle" "Exact library versions in every install block. No “works on my machine” — the pins are the contract."
+            )
+          }}
+          {{ template "aiml-feature-card" (dict
+            "title" "Real hardware"
+            "subtitle" "Written for a single 12 GB GPU (RTX 3080 Ti class), not a hypothetical A100 in the cloud."
+            )
+          }}
+          {{ template "aiml-feature-card" (dict
+            "title" "Numbers at every step"
+            "subtitle" "VRAM budgets, throughput, and latency so you know what to expect — and what went wrong — before you run it."
+            )
+          }}
+          {{ template "aiml-feature-card" (dict
+            "title" "Gotchas included"
+            "subtitle" "The architecture-specific quirks (fused QKV, MQA, fp16 vs bf16) that most tutorials skip and that actually break your run."
+            )
+          }}
+          {{ template "aiml-feature-card" (dict
+            "title" "Troubleshooting first-class"
+            "subtitle" "Each guide ends with the failures you will hit and the exact fix, not a link to a forum thread."
+            )
+          }}
+          {{ template "aiml-feature-card" (dict
+            "title" "Small and honest"
+            "subtitle" "A few deep guides over a mountain of shallow ones. If a claim can’t be verified, it doesn’t ship."
+            )
+          }}
+        </div>
+      </section>
+
+    </div>
+  </div>
+{{ end }}
+

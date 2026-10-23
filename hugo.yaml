@@ -1,0 +1,68 @@
+# Hugo configuration file
+title: aiml.training
+description: "Practical, code-first AI/ML tutorials for working engineers — version-pinned pipelines, real hardware, and the numbers you need before you run."
+
+# import hextra as module
+module:
+  imports:
+  - path: github.com/imfing/hextra
+
+markup:
+  # allow raw html
+  goldmark:
+    renderer:
+      unsafe: true
+
+  # enable hextra syntax highlight
+  highlight:
+    noClasses: false
+
+menu:
+  main:
+    - name: Tutorials
+      pageRef: /docs/tutorials
+      weight: 1
+    - name: About
+      pageRef: /about
+      weight: 2
+    - name: Search
+      weight: 3
+      params:
+        type: search
+    - name: GitHub
+      weight: 4
+      url: "https://github.com/Decent-Software-LLC/aiml.training"
+      params:
+        icon: github
+
+params:
+  # Default Open Graph / social preview image (1200x630). Each tutorial
+  # overrides this with its own image via the `images` front matter field.
+  images: ["og/default.png"]
+
+  navbar:
+    displayTitle: true
+    displayLogo: false
+
+  footer:
+    displayCopyright: false
+    displayPoweredBy: false
+
+  editURL:
+    enable: true
+    base: "https://github.com/Decent-Software-LLC/aiml.training/edit/main/content"
+
+  analytics:
+    provider: umami
+    websiteID: "15a4fab2-30d1-425e-a937-98a4556dc8c1"
+
+  # Email capture (layouts/partials/aiml-email-capture.html).
+  # `endpoint` is set -> the card renders a real form that POSTs to Formspree.
+  # On success the form redirects to `redirect` client-side (Formspree free
+  # tier does not allow a custom thank-you URL — a paid feature — so we do it
+  # ourselves; see D-007 in ~/aiml-operations/DECISIONS.md).
+  emailCapture:
+    endpoint: "https://formspree.io/f/mjygdjrk"
+    redirect: "https://aiml.training/thanks/"
+    email: "hello@aiml.training"
+    subject: "New aiml.training subscriber"

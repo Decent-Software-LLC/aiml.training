@@ -1,0 +1,37 @@
+{{ define "main" }}
+  <div class="mx-auto flex max-w-screen-xl">
+    {{ partial "toc.html" . }}
+    <article class="w-full break-words flex min-h-[calc(100vh-var(--navbar-height))] min-w-0 justify-center pb-8 pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main class="w-full min-w-0 max-w-6xl px-6 pt-4 md:px-12">
+        {{ partial "breadcrumb.html" . }}
+
+        <!-- Branded header (matches the landing page). This index page
+             intentionally has no sidebar — the card grid below is the
+             navigation, and a sidebar would duplicate it. -->
+        {{ partial "aiml-header.html" (dict
+          "badge" (.Params.headerBadge | default "Tutorials")
+          "title" (.Params.headerTitle | default .Title)
+          "lead" (.Params.headerLead | default "End-to-end, hands-on guides for practical LLM engineering on a single 12 GB GPU. Every one is version-pinned and ships with the numbers you need before you run it.")
+        ) }}
+
+        {{- with .Content }}
+        <div class="content mt-8">
+          {{ . }}
+        </div>
+        {{- end }}
+
+        <!-- The fine-tune → serve → evaluate loop + the extension -->
+        <div class="mt-8">
+          {{ partial "aiml-tutorial-cards.html" (dict "mode" "index") }}
+        </div>
+
+        {{ partial "components/last-updated.html" . }}
+
+        <!-- Email capture -->
+        <div class="mt-16">
+          {{ partial "aiml-email-capture.html" . }}
+        </div>
+      </main>
+    </article>
+  </div>
+{{ end }}

@@ -1,0 +1,104 @@
+/*
+ * custom.css — loaded by the Hextra theme in addition to the precompiled main.css.
+ *
+ * The theme ships a precompiled main.css (no content-scanning in production), so any
+ * utility class not already in that file must be defined here. These are the small
+ * number of utilities the custom landing page / 404 layout uses that main.css lacks.
+ *
+ * IMPORTANT: keep this file FLAT. Hugo's CSS minifier emits stray closing braces when
+ * @media is nested inside a rule body (it used to corrupt the whole sheet — the file
+ * ended in "}}}" and depth went negative). Responsive variants are therefore plain
+ * class names with their @media block at the top level.
+ *
+ * Primary colors follow the theme scale: hsl(var(--primary-hue) 100% L%)
+ *   400 -> 66%   500 -> 50%   600 -> 45%   700 -> 39%
+ */
+
+/* --- primary text colors --- */
+.text-primary-400 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 66% / var(--tw-text-opacity)); }
+.text-primary-500 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 50% / var(--tw-text-opacity)); }
+.text-primary-600 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 45% / var(--tw-text-opacity)); }
+
+.dark .dark\:text-primary-400 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 66% / var(--tw-text-opacity)); }
+.dark .dark\:text-primary-500 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 50% / var(--tw-text-opacity)); }
+.dark .dark\:text-primary-600 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 45% / var(--tw-text-opacity)); }
+
+.group:hover .group-hover\:text-primary-600 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 45% / var(--tw-text-opacity)); }
+.dark .group:hover .dark\:group-hover\:text-primary-400 { --tw-text-opacity: 1; color: hsl(var(--primary-hue) 100% 66% / var(--tw-text-opacity)); }
+
+/* --- neutral text colors --- */
+.text-gray-400 { --tw-text-opacity: 1; color: rgb(156 163 175 / var(--tw-text-opacity)); }
+.dark .dark\:text-gray-500 { --tw-text-opacity: 1; color: rgb(107 114 128 / var(--tw-text-opacity)); }
+
+/* --- borders --- */
+.border-gray-300 { --tw-border-opacity: 1; border-color: rgb(209 213 219 / var(--tw-border-opacity)); }
+.border-dashed { border-style: dashed; }
+.border-current { border-color: currentColor; }
+
+/* --- layout / spacing --- */
+.flex-wrap { flex-wrap: wrap; }
+.gap-3 { gap: 0.75rem; }
+.mt-3 { margin-top: 0.75rem; }
+
+/* --- typography --- */
+.tracking-wide { letter-spacing: 0.025em; }
+.uppercase { text-transform: uppercase; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.text-6xl { font-size: 3.75rem; line-height: 1; }
+
+/* --- spacing (used by 404) --- */
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+
+/* --- flex / sizing (sub-page layouts + email capture) --- */
+.flex-1 { flex: 1 1 0%; }
+.px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+/* responsive: card-row / pad-page / pad-hero / row-sm / align-sm — media blocks at the bottom */
+.card-row { gap: 0.75rem; }
+.pad-page { padding: 2rem; }
+.pad-hero { padding-top: 2.5rem; }
+
+/* --- typography (sub-page layouts) --- */
+.leading-relaxed { line-height: 1.625; }
+.max-w-3xl { max-width: 48rem; }
+
+/* --- form / interaction (email capture) --- */
+.placeholder\:text-gray-400::placeholder { color: rgb(156 163 175 / 1); }
+.hover\:underline:hover { text-decoration-line: underline; }
+
+/* --- error text (email capture AJAX errors) --- */
+.text-red-600 { --tw-text-opacity: 1; color: rgb(220 38 38 / var(--tw-text-opacity)); }
+.dark .dark\:text-red-400 { --tw-text-opacity: 1; color: rgb(248 113 113 / var(--tw-text-opacity)); }
+
+/* --- tutorial card layout (landing grid + sub-page layouts) --- */
+.ml-auto { margin-left: auto; }
+.mt-0\.5 { margin-top: 0.125rem; }
+.min-w-5 { min-width: 1.25rem; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+.leading-snug { line-height: 1.375; }
+.text-right { text-align: right; }
+.text-\[11px\] { font-size: 11px; }
+.rounded-2xl { border-radius: 1rem; }
+.min-h-screen { min-height: calc(100vh - var(--navbar-height)); }
+.pr-safe { padding-right: calc(env(safe-area-inset-right) - 1.5rem); }
+
+/* --- amber accents (Kev-4B "decision model" highlight) --- */
+.text-amber-700 { color: rgb(180 83 9 / 1); }
+.dark .dark\:text-amber-300 { color: rgb(252 211 77 / 1); }
+.group:hover .group-hover\:text-amber-700 { color: rgb(180 83 9 / 1); }
+.dark .group:hover .dark\:group-hover\:text-amber-300 { color: rgb(252 211 77 / 1); }
+.bg-amber-50\/40 { background-color: rgb(255 251 235 / 0.4); }
+.dark .dark\:bg-amber-400\/\[0.06\] { background-color: rgb(251 191 36 / 0.06); }
+.border-amber-300\/60 { border-color: rgb(252 211 77 / 0.6); }
+.dark .dark\:border-amber-400\/30 { border-color: rgb(251 191 36 / 0.3); }
+
+/* --- responsive blocks (top-level only — never nest inside rule bodies) --- */
+@media (min-width: 640px) {
+  .row-sm { flex-direction: row; }
+  .align-sm { align-items: center; }
+  .card-row { gap: 1.5rem; align-items: center; }
+}
+@media (min-width: 768px) {
+  .pad-page { padding: 2rem; }
+  .pad-hero { padding-top: 2.5rem; }
+}

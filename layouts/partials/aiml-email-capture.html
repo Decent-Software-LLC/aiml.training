@@ -1,0 +1,130 @@
+{{/*
+  aiml-email-capture.html — on-brand email capture card.
+
+  Config-driven so it works with zero infrastructure and upgrades to a real
+  list the moment the owner picks a provider:
+
+    hugo.yaml:
+      params:
+        emailCapture:
+          endpoint: "https://formspree.io/f/xxxx"   # optional; Formspree/Getform/ConvertKit
+          email: "hello@aiml.training"              # mailto fallback recipient
+          subject: "Subscribe me to the aiml.training list"
+
+  - If `endpoint` is set  -> a real <form> that POSTs to it (owner's ESP stores the address).
+    Submission is done via AJAX (fetch) with `Accept: application/json`, and on
+    success we redirect to `params.emailCapture.redirect` (default /thanks/) ourselves.
+    This works on Formspree's FREE tier, where the custom redirect URL is a paid
+    feature — we just don't rely on Formspree's redirect at all.
+  - If `endpoint` is empty -> an honest mailto CTA that opens the visitor's mail client.
+*/}}
+{{- $ec := site.Params.emailCapture | default dict -}}
+{{- $endpoint := $ec.endpoint | default "" -}}
+{{- $redirect := $ec.redirect | default "https://aiml.training/thanks/" -}}
+{{- $email := $ec.email | default "hello@aiml.training" -}}
+{{- $subject := $ec.subject | default "Subscribe me to the aiml.training list" -}}
+
+<div
+  class="relative overflow-hidden rounded-3xl border border-gray-200 dark:border-neutral-800 p-6 pad-page not-prose"
+  style="background: radial-gradient(ellipse at 20% 0%,rgba(194,97,254,0.12),hsla(0,0%,100%,0));"
+>
+  <div class="flex items-center gap-2 text-primary-600 dark:text-primary-400">
+    {{- partial "utils/icon" (dict "name" "mail" "attributes" "height=18") -}}
+    <span class="text-xs font-medium uppercase tracking-wide">Get new tutorials</span>
+  </div>
+  <h3 class="mt-3 text-2xl font-medium leading-6 mb-2 bg-clip-text text-transparent bg-gradient-to-b from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-400">
+    Get the tutorials as they ship
+  </h3>
+  <p class="text-gray-500 dark:text-gray-400 text-sm leading-6">
+    One email when a new guide lands — no spam, no drip campaign, unsubscribe anytime.
+  </p>
+
+  {{- if $endpoint }}
+  <form id="aiml-capture-form" action="{{ $endpoint }}" method="POST" data-redirect="{{ $redirect }}" class="mt-5 flex flex-col row-sm gap-3 w-full">
+    {{/* Formspree: honeypot for spam + context fields (captured in the notification) */}}
+    <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <input type="hidden" name="_subject" value="New aiml.training subscriber" />
+    <input type="hidden" name="page" value="{{ .Permalink }}" />
+    <input
+      type="email"
+      name="email"
+      required
+      placeholder="you@company.com"
+      class="flex-1 min-w-0 rounded-full px-5 py-3 text-sm bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800"
+    />
+    <button
+      type="submit"
+      class="font-medium cursor-pointer px-6 py-3 text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 rounded-full text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+    >
+      Subscribe
+    </button>
+  </form>
+  <p data-aiml-error class="hidden mt-3 text-sm text-red-600 dark:text-red-400" role="alert"></p>
+  <script>
+  (function () {
+    var form = document.getElementById('aiml-capture-form');
+    if (!form) return;
+    var endpoint = form.getAttribute('action');
+    var redirect = form.getAttribute('data-redirect') || 'https://aiml.training/thanks/';
+    var btn = form.querySelector('button[type=submit]');
+    var err = form.querySelector('[data-aiml-error]');
+    function setErr(msg) {
+      if (!err) return;
+      err.textContent = msg || '';
+      err.classList.toggle('hidden', !msg);
+    }
+    function resetBtn() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
+    }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      setErr('');
+      if (btn) { btn.disabled = true; btn.textContent = 'Subscribing\u2026'; }
+      // Any 2xx from the endpoint means the address was accepted. (Formspree's
+      // JSON success body is {success:'true',…}, but when the form has a
+      // dashboard-configured redirect it answers {ok:true,next:'/…'} — and the
+      // latter still logged the submission, so status is the only signal we
+      // trust.)
+      fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(function (r) {
+          return r.text().then(function (t) {
+            var j = {};
+            try { j = JSON.parse(t) || {}; } catch (_) {}
+            return { ok: r.ok, status: r.status, j: j };
+          });
+        })
+        .then(function (res) {
+          if (res.ok) { window.location.href = redirect; return; }
+          var msg = (res.j && (res.j.message || res.j.error)) ||
+            ('We could not save your address (HTTP ' + res.status + '). Try again in a moment, or email ' +
+             'hello@aiml.training and we will add you to the list.');
+          setErr(msg); resetBtn();
+        })
+        .catch(function () {
+          setErr('Network error — check your connection and try again.');
+          resetBtn();
+        });
+    });
+  })();
+  </script>
+  {{- else }}
+  <div class="mt-5">
+    <a
+      href="mailto:{{ $email }}?subject={{ $subject | urlquery }}"
+      class="inline-flex items-center gap-1 font-medium cursor-pointer px-6 py-3 text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 rounded-full text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+    >
+      Email me the list
+      {{- partial "utils/icon" (dict "name" "arrow-right" "attributes" "height=14") -}}
+    </a>
+    <p class="mt-3 text-xs text-gray-400 dark:text-gray-500">
+      We're wiring up a one-click signup form. Until then, email
+      <a href="mailto:{{ $email }}" class="text-primary-600 dark:text-primary-400 hover:underline">{{ $email }}</a>
+      and we'll add you to the list.
+    </p>
+  </div>
+  {{- end }}
+</div>

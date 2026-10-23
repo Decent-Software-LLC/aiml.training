@@ -1,0 +1,40 @@
+{{/*
+  aiml-new-tutorial-banner.html — "new tutorial" announcement banner, sits above
+  the hero on the landing page. Styled with the same card system as
+  aiml-tutorial-cards.html (identical border, padding, rounding, hover, and
+  top-row structure) so it reads as part of the page rather than a separate strip.
+
+  The Hextra v0.2.9 theme ships a precompiled main.min.css (no live Tailwind
+  scan), so only classes already in that file render. This banner intentionally
+  uses the same subset the tutorial cards use — no opacity-slash variants, no
+  sm:* responsive row, no group-hover primary-700/300 — all of which the theme
+  does not compile. Hover state reuses the cards' group-hover:text-primary-600.
+
+  Self-contained: when a different tutorial is the newest, edit the four strings
+  below (title, meta, subtitle, link) and remove the "New" pill from the Kev card
+  data in aiml-tutorial-cards.html when it stops being true.
+*/}}
+
+{{- $title := "Fine-Tune Kev-4B: A Calibrated Decision Model" -}}
+{{- $meta := "New · Kev-4B · 12 GB · ~8 min" -}}
+{{- $subtitle := "Take System One's open decision model, fine-tune it on 834 real support tickets in about 8 minutes, and prove it against the stock model on the same held-out set." -}}
+{{- $link := "/docs/tutorials/fine-tune-kev-4b-decision-model/" -}}
+
+<a
+  href="{{ $link | relURL }}"
+  class="group relative overflow-hidden rounded-3xl border border-gray-200 hover:border-gray-300 dark:border-neutral-800 dark:hover:border-neutral-700 block no-underline"
+>
+  <div class="relative w-full p-6">
+    <!-- Top row mirrors the tutorial cards: icon left, meta left-aligned beside it. -->
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="shrink-0 text-primary-600 dark:text-primary-400">{{ partial "utils/icon" (dict "name" "sparkles" "attributes" "height=18") -}}</span>
+      <span class="shrink-0 truncate text-[11px] font-medium uppercase tracking-wide text-primary-600 dark:text-primary-400">{{ $meta }}</span>
+    </div>
+    <h2 class="mt-3 text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400">{{ $title }}</h2>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 leading-6">{{ $subtitle }}</p>
+    <div class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400">
+      Read the tutorial
+      {{- partial "utils/icon" (dict "name" "arrow-right" "attributes" "height=14") -}}
+    </div>
+  </div>
+</a>

@@ -1,0 +1,11 @@
+# Hugo output
+public/
+resources/
+.hugo_build.lock
+
+# Private operating records live outside the repo at ~/aiml-operations/
+operations/
+
+# Editor
+.vscode/
+__pycache__/

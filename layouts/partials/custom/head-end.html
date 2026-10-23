@@ -1,0 +1,28 @@
+{{- /* Analytics: enable by setting params.analytics.provider in hugo.yaml.
+     Supported: "plausible" (with params.analytics.domain), "umami" (with params.analytics.websiteID).
+     Umami defaults to the hosted cloud script; set params.analytics.src to override (e.g. self-hosted /umami.js).
+     No provider set = no tracking script emitted. */ -}}
+{{- with site.Params.analytics -}}
+  {{- if eq .provider "plausible" -}}
+    <script defer data-domain="{{ .domain }}" src="https://plausible.io/js/script.js"></script>
+  {{- else if eq .provider "umami" -}}
+    {{- $src := .src | default "https://cloud.umami.is/script.js" -}}
+    <script defer src="{{ $src }}" data-website-id="{{ .websiteID }}"></script>
+  {{- end -}}
+{{- end -}}
+
+{{- /* Canonical URL on every page: single absolute https self-reference
+     (Permalink renders with site.BaseURL; CI builds run with the
+     https://aiml.training/ baseURL). */ -}}
+<link rel="canonical" href="{{ .Permalink }}">
+
+{{- /* Article structured data for pages with a description */ -}}
+{{- if and .Description (not .IsHome) -}}
+{{- $pub := .Date | default .Lastmod -}}
+{{- if $pub -}}
+{{- $date := $pub.Format "2006-01-02" -}}
+{{- $title := .Title | htmlEscape | replaceRE `"` `\\"` -}}
+{{- $desc := .Description | htmlEscape | replaceRE `"` `\\"` -}}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"{{ $title }}","description":"{{ $desc }}","mainEntityOfPage":"{{ .Permalink }}","datePublished":"{{ $date }}","author":{"@type":"Organization","name":"aiml.training"},"publisher":{"@type":"Organization","name":"aiml.training","url":"https://aiml.training/"}}</script>
+{{- end -}}
+{{- end -}}

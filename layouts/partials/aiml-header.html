@@ -1,0 +1,31 @@
+{{/*
+  aiml-header.html — branded sub-page header matching the landing page's vibe.
+  Args (dict):
+    .badge  (string)  small pill label, e.g. "Tutorials"
+    .title  (string)  page title (rendered as a gradient heading)
+    .lead   (string)  one- or two-sentence intro
+*/}}
+{{- $badge := .badge -}}
+{{- $title := .title -}}
+{{- $lead := .lead -}}
+
+<div class="flex flex-col items-start pt-8 pad-hero">
+  {{- with $badge }}
+  <span
+    class="inline-flex items-center rounded-full gap-2 px-3 py-1 text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-800 uppercase tracking-wide"
+  >
+    <span class="w-2 h-2 rounded-full bg-primary-400"></span>
+    {{ . }}
+  </span>
+  {{- end }}
+  <h1
+    class="mt-4 text-4xl font-bold leading-tight tracking-tight md:text-5xl bg-clip-text text-transparent bg-gradient-to-b from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-400"
+  >
+    {{ $title }}
+  </h1>
+  {{- with $lead }}
+  <p class="mt-4 text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-3xl">
+    {{ . }}
+  </p>
+  {{- end }}
+</div>
