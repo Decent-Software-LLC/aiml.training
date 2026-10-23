@@ -9,3 +9,7 @@ operations/
 # Editor
 .vscode/
 __pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
