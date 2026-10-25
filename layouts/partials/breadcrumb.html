@@ -1,0 +1,25 @@
+{{/*
+  Site-local override of hextra v0.2.9 partials/breadcrumb.html.
+
+  Change vs upstream: the /docs/ hub page never appears as its own crumb.
+  Upstream renders Ancestors verbatim, so every tutorial showed
+  "Documentation → Tutorials → <page>", where "Documentation" links to the
+  card-hub page (/docs/) that readers don't navigate from breadcrumbs.
+  Here ancestors are filtered to drop IsSection pages without a visible menu
+  entry of their own (i.e. the docs hub) — tutorials render as
+  "Tutorials → <page>". Non-section ancestors (if any section ever nests)
+  still render untouched, and this file stays inert if .Ancestors is empty.
+*/}}
+<div class="mt-1.5 flex items-center gap-1 overflow-hidden text-sm text-gray-500 dark:text-gray-400 contrast-more:text-current">
+  {{- range .Ancestors.Reverse }}
+    {{- if and (not .IsHome) (not (eq .RelPermalink "/docs/")) }}
+      <div class="whitespace-nowrap transition-colors min-w-[24px] overflow-hidden text-ellipsis hover:text-gray-900 dark:hover:text-gray-100">
+        <a href="{{ .Permalink }}">{{ .LinkTitle }}</a>
+      </div>
+      {{- partial "utils/icon.html" (dict "name" "chevron-right" "attributes" "class=\"w-3.5 shrink-0\"") -}}
+    {{ end -}}
+  {{ end -}}
+  <div class="whitespace-nowrap transition-colors font-medium text-gray-700 contrast-more:font-bold contrast-more:text-current dark:text-gray-100 contrast-more:dark:text-current">
+    {{- .LinkTitle -}}
+  </div>
+</div>
