@@ -15,10 +15,10 @@
   data in aiml-tutorial-cards.html when it stops being true.
 */}}
 
-{{- $title := "Fine-Tune Kev-4B: A Calibrated Decision Model" -}}
-{{- $meta := "New · Kev-4B · 12 GB · ~8 min" -}}
-{{- $subtitle := "Take System One's open decision model, fine-tune it on 834 real support tickets in about 8 minutes, and prove it against the stock model on the same held-out set." -}}
-{{- $link := "/docs/tutorials/fine-tune-kev-4b-decision-model/" -}}
+{{- $title := "Teach a Decision Model Its Tribal Knowledge" -}}
+{{- $meta := "New · pplx-decider · QLoRA · chance to 100%" -}}
+{{- $subtitle := "Two LoRA runs on one decision model, two truths: on benchmarks the teacher already knows, our adapter lost. On invented routing conventions it went from chance to 120/120 — after four silent bugs taught us how to measure learning itself." -}}
+{{- $link := "/docs/tutorials/fine-tune-decision-router/" -}}
 
 <a
   href="{{ $link | relURL }}"
