@@ -1,3 +1,19 @@
+{{- /* Theme default: aiml.training prefers DARK unless the visitor's OS
+     explicitly asks for light or they have toggled before (localStorage wins
+     both ways). Runs immediately after Hextra's own init script (head-css ->
+     head init -> custom/head-end), so there is no flash of light content;
+     same class/colorScheme contract as upstream, and assets/js/theme.js keeps
+     every .theme-toggle button (header, sidebar, footer) in sync. */ -}}
+<script>
+  (function () {
+    var stored = localStorage.getItem("color-theme");
+    var wantDark = stored ? stored === "dark"
+                          : !window.matchMedia("(prefers-color-scheme: light)").matches;
+    document.documentElement.classList.toggle("dark", wantDark);
+    document.documentElement.style.colorScheme = wantDark ? "dark" : "light";
+  })();
+</script>
+
 {{- /* Analytics: enable by setting params.analytics.provider in hugo.yaml.
      Supported: "plausible" (with params.analytics.domain), "umami" (with params.analytics.websiteID).
      Umami defaults to the hosted cloud script; set params.analytics.src to override (e.g. self-hosted /umami.js).
