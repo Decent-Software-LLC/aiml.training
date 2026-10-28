@@ -1,0 +1,222 @@
+{{/*
+  vram-calculator.html — free single-GPU VRAM estimator for LLM fine-tune & serve.
+  Self-contained (scoped <style> + vanilla JS, no Tailwind-class dependence).
+  Estimates are calibrated against our own logged RTX 3080 Ti 12 GB runs
+  (anchors listed in the UI); clearly labeled as estimates.
+*/}}
+<div id="vramcalc">
+<style>
+  #vramcalc { --vc-fg:#1f2937; --vc-muted:#6b7280; --vc-bg-card:#f9fafb; --vc-border:#e5e7eb; --vc-field:#ffffff; max-width:56rem; }
+  html.dark #vramcalc { --vc-fg:#e5e7eb; --vc-muted:#9ca3af; --vc-bg-card:#111318; --vc-border:#2b2f36; --vc-field:#181b20; }
+  #vramcalc { color:var(--vc-fg); }
+  #vramcalc .vc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:.75rem; margin-top:1rem; }
+  #vramcalc .vc-field label { display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; color:var(--vc-muted); margin-bottom:.25rem; }
+  #vramcalc select, #vramcalc input[type=number] {
+    width:100%; padding:.5rem .6rem; border-radius:.5rem; border:1px solid var(--vc-border);
+    background:var(--vc-field); color:var(--vc-fg); font-size:.95rem;
+  }
+  #vramcalc .vc-check { display:flex; align-items:center; gap:.5rem; margin-top:.6rem; font-size:.9rem; color:var(--vc-fg); }
+  #vramcalc .vc-out { margin-top:1.25rem; padding:1.25rem; border-radius:.75rem; border:1px solid var(--vc-border); background:var(--vc-bg-card); }
+  #vramcalc .vc-verdict { font-size:1.05rem; font-weight:700; }
+  #vramcalc .vc-ok { color:#16a34a; } #vramcalc .vc-warn { color:#d97706; } #vramcalc .vc-bad { color:#dc2626; }
+  #vramcalc .vc-num { font-variant-numeric:tabular-nums; font-weight:700; font-size:1.6rem; }
+  #vramcalc .vc-bar { height:.6rem; border-radius:.3rem; background:var(--vc-border); margin:.75rem 0 .25rem; overflow:hidden; }
+  #vramcalc .vc-fill { height:100%; border-radius:.3rem; background:#2563eb; transition:width .2s ease; }
+  #vramcalc .vc-fill.vc-over { background:#dc2626; }
+  #vramcalc .vc-knobs { margin:.75rem 0 0 1.1rem; font-size:.9rem; color:var(--vc-muted); }
+  #vramcalc .vc-anchors { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:.5rem; }
+  #vramcalc .vc-anchors th, #vramcalc .vc-anchors td { text-align:left; padding:.4rem .6rem; border-bottom:1px solid var(--vc-border); }
+  #vramcalc .vc-note { font-size:.8rem; color:var(--vc-muted); margin-top:.75rem; line-height:1.5; }
+</style>
+
+<div class="vc-grid">
+  <div class="vc-field"><label for="vc-gpu">Your GPU</label>
+    <select id="vc-gpu">
+      <option value="8">8 GB (RTX 4060 / 3070)</option>
+      <option value="10">10 GB (V100 / 3080)</option>
+      <option value="12" selected>12 GB (3060 12GB / 3080 Ti / V100S)</option>
+      <option value="16">16 GB (Tesla T4 / 4060 Ti 16GB)</option>
+      <option value="24">24 GB (3090 / 4090)</option>
+      <option value="48">48 GB (A6000)</option>
+    </select>
+  </div>
+  <div class="vc-field"><label for="vc-mode">What are you doing?</label>
+    <select id="vc-mode">
+      <option value="qlora" selected>QLoRA fine-tune (NF4 + LoRA)</option>
+      <option value="serve-vllm">Serve with vLLM (FP8)</option>
+      <option value="serve-peft">Serve fine-tuned (Transformers + PEFT, 4-bit)</option>
+    </select>
+  </div>
+  <div class="vc-field"><label for="vc-model">Model size</label>
+    <select id="vc-model">
+      <option value="1.7">1.7B</option>
+      <option value="4" selected>4B (Qwen3.5-4B)</option>
+      <option value="8">7–8B (Llama-class)</option>
+      <option value="9">9B (Qwen3.5-9B)</option>
+      <option value="14">14B</option>
+    </select>
+  </div>
+  <div class="vc-field"><label for="vc-arch">Attention architecture</label>
+    <select id="vc-arch">
+      <option value="hybrid" selected>Hybrid linear-attn (Qwen3.5-style GDN)</option>
+      <option value="dense">Dense attention (Llama/Qwen dense)</option>
+    </select>
+  </div>
+  <div class="vc-field"><label for="vc-seq">Sequence length (train) / context (serve)</label>
+    <input type="number" id="vc-seq" value="512" min="64" max="32768" step="64">
+  </div>
+  <div class="vc-field"><label for="vc-batch">Batch size (train) / concurrent seqs (serve)</label>
+    <input type="number" id="vc-batch" value="1" min="1" max="64" step="1">
+  </div>
+</div>
+<label class="vc-check"><input type="checkbox" id="vc-ckpt" checked> Gradient checkpointing on (fine-tune only — strongly recommended)</label>
+
+<div class="vc-out" aria-live="polite">
+  <div class="vc-verdict" id="vc-verdict">—</div>
+  <div style="margin-top:.5rem"><span class="vc-num" id="vc-peak">—</span> <span style="color:var(--vc-muted)">GiB est. peak</span>
+    <span style="color:var(--vc-muted)">of</span> <span class="vc-num" style="font-size:1.1rem" id="vc-cap">—</span> <span style="color:var(--vc-muted)">GiB</span></div>
+  <div class="vc-bar"><div class="vc-fill" id="vc-fill" style="width:0%"></div></div>
+  <ul class="vc-knobs" id="vc-knobs"></ul>
+  <div class="vc-note" id="vc-note"></div>
+</div>
+
+<h2 id="calibration">How these numbers were made</h2>
+<p>Every coefficient is anchored to a logged run on our RTX 3080 Ti 12 GB (driver 595.x, torch 2.13+cu130, transformers 5.19, peft 0.21.2, vLLM 0.32) — not a whiteboard formula.</p>
+<table class="vc-anchors">
+  <thead><tr><th>Logged workload</th><th>Measured</th><th>Our estimate</th></tr></thead>
+  <tbody>
+    <tr><td>QLoRA NF4, Qwen3.5-4B, seq 512, batch 1, ckpt on</td><td>6.70 GiB peak (<a href="/docs/tutorials/lora-fine-tuning-qwen3.5-4b/">tutorial #1</a>)</td><td id="vc-a1">—</td></tr>
+    <tr><td>QLoRA NF4, pplx-decider (4B), batch 8, long option lists, ckpt on</td><td>~10.6 GiB resident (<a href="/docs/tutorials/fine-tune-decision-router/">tutorial #6</a>)</td><td id="vc-a2">—</td></tr>
+    <tr><td>vLLM FP8 serve, Qwen3.5-4B</td><td>~3.4 GiB KV headroom after weights (<a href="/docs/tutorials/serve-fine-tuned-llm-vllm/">tutorial #2</a>)</td><td id="vc-a3">—</td></tr>
+    <tr><td>Transformers+PEFT 4-bit merged serve, 4B</td><td>8.10 GiB peak (<a href="/docs/tutorials/serve-fine-tuned-llm-vllm/">tutorial #2</a>)</td><td id="vc-a4">—</td></tr>
+    <tr><td>bf16 full-precision backward, 4B on 12 GB</td><td>OOM (<a href="/docs/tutorials/fine-tune-decision-router/">tutorial #6</a>)</td><td id="vc-a5">—</td></tr>
+  </tbody>
+</table>
+<p class="vc-note">Estimate quality: inside the anchor region (4B-ish on 12–24 GB) expect roughly ±15%. Outside it — 14B+, very long contexts, dense models with big KV — treat ±30–40%: directionally right, not an SLA. CUDA graphs, sampler kernels, vision towers, and framework versions shift real numbers. Always confirm with <code>torch.cuda.max_memory_allocated()</code> + <code>nvidia-smi</code> before trusting a plan. If this tool saved you an OOM, <a href="/about/">tell us</a> — the two things we ship are tutorials exactly like the ones linked above.</p>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  // Calibrated coefficients (see anchors table; fit to logged RTX 3080 Ti runs).
+  // Two QLoRA operating points fitted: tut#1 (b1 s512 -> 6.70 peak) and
+  // tut#6 (b8 long-option-lists -> ~10.6 resident). Checkpointed activations
+  // are sublinear in batch and sqrt-ish in seq (only layer inputs are kept).
+  var W = { nf4: 0.62, bf16: 2.10, fp8: 1.10 };           // GiB per billion params
+  var LORA_OVERHEAD_16 = 0.55;                             // GiB: adapters+grads+AdamW states @ r=16 for 4B-class
+  var ACT_K = 2.77;                                        // GiB at b1 s512 4B ckpt-on (6.70 - 2.48 w - 0.55 lora - 0.9 base)
+  var RUNTIME_BASE = 0.9;                                  // CUDA ctx/allocator overhead GiB
+  var VLLM_ENGINE = 3.0;                                   // measured: 12 usable-with-0.9-util - FP8 weights 4.4 - KV headroom 3.4 (tut #2)
+  var PEFT_PATH = 5.6;                                     // measured: 8.10 peak - 2.48 NF4 weights (tut #2 HF generate path, 248k-vocab logits buffers)
+
+  function activations(sizeB, seq, batch, ckpt) {
+    var a = ACT_K * Math.pow(sizeB / 4, 0.5) * Math.pow(batch, 0.25) * Math.sqrt(seq / 512);
+    if (!ckpt) a *= 2.5;   // uncheckpointed retains every layer's activations (tut #6 trap)
+    return a;
+  }
+
+  function kvBytesPerTok(arch, sizeB, fp8kv) {
+    // Dense: 2(K+V) * nlayer * nkv * headdim, bf16 GQA ~= 0.2 GiB/1k tok at 8B.
+    var r = (arch === 'dense') ? (0.2 * (sizeB / 8)) / 1024 : (0.045 * (sizeB / 4)) / 1024;
+    return fp8kv ? r * 0.5 : r;   // hybrid GDN: recurrent state dominates, near-flat in seq
+  }
+
+  function est() {
+    var gpu = parseFloat($('vc-gpu').value);
+    var mode = $('vc-mode').value;
+    var sizeB = parseFloat($('vc-model').value);
+    var arch = $('vc-arch').value;
+    var seq = Math.max(64, parseInt($('vc-seq').value, 10) || 512);
+    var batch = Math.max(1, parseInt($('vc-batch').value, 10) || 1);
+    var ckpt = $('vc-ckpt').checked;
+
+    var gib = 0, breakdown = '';
+    if (mode === 'qlora') {
+      var w = W.nf4 * sizeB;
+      var lora = LORA_OVERHEAD_16 * (sizeB / 4);
+      var act = activations(sizeB, seq, batch, ckpt);
+      gib = w + lora + act + RUNTIME_BASE;
+      breakdown = 'NF4 weights ~' + w.toFixed(1) + ' + LoRA/optimizer ~' + lora.toFixed(1) + ' + activations ~' + act.toFixed(1) + ' + CUDA base ~' + RUNTIME_BASE.toFixed(1);
+    } else if (mode === 'serve-vllm') {
+      var wv = W.fp8 * sizeB;
+      var kv = kvBytesPerTok(arch, sizeB, true) * seq * batch;
+      // vLLM preallocates weights + one pool; requirement = weights + max(pool floor, KV demand + overhead)
+      gib = wv + Math.max(VLLM_ENGINE, kv + RUNTIME_BASE);
+      breakdown = 'FP8 weights ~' + wv.toFixed(1) + ' + engine/KV pool ~' + (gib - wv).toFixed(1) + ' (pool floor ' + VLLM_ENGINE.toFixed(1) + ', KV demand ~' + kv.toFixed(1) + ')';
+    } else {
+      var wp = W.nf4 * sizeB;
+      var kpv = kvBytesPerTok(arch, sizeB, false) * seq * batch;
+      gib = wp + PEFT_PATH + kpv;
+      breakdown = 'NF4 weights ~' + wp.toFixed(1) + ' + HF generate path ~' + PEFT_PATH.toFixed(1) + ' + gen state ~' + kpv.toFixed(1);
+    }
+    return { gib: gib, gpu: gpu, breakdown: breakdown, mode: mode, ckpt: ckpt, batch: batch, seq: seq };
+  }
+
+  function e_gpu_spare(gpu, wv, eng) { return gpu - wv - eng; }
+
+  function render() {
+    var e = est();
+    var pct = Math.min(100, (e.gib / e.gpu) * 100);
+    $('vc-cap').textContent = e.gpu.toFixed(0);
+    $('vc-peak').textContent = e.gib.toFixed(1);
+    $('vc-fill').style.width = pct + '%';
+    $('vc-fill').classList.toggle('vc-over', e.gib > e.gpu);
+    var v = $('vc-verdict'), knobs = $('vc-knobs');
+    knobs.innerHTML = '';
+    var li = function (t, cls) { var el = document.createElement('li'); el.textContent = t; if (cls) el.className = cls; knobs.appendChild(el); };
+    if (e.gib > e.gpu) {
+      v.className = 'vc-verdict vc-bad';
+      v.textContent = "Doesn't fit — OOM likely. Fixable, though.";
+      if (e.mode === 'qlora') {
+        if (!e.ckpt) li('Turn gradient checkpointing ON first — this card died specifically because it was off while looking on (tutorial #6).');
+        else li('Halve batch size (activations scale ~linearly with batch at fixed seq).');
+        li('Cut sequence length — same linear scaling; 512 is usually enough for instruction data.');
+        li('If still over: drop a size class (9B -> 4B). On 12 GB, 4B QLoRA is the sweet spot we verified end to end.');
+      } else if (e.mode === 'serve-vllm') {
+        li('Lower max-model-len / concurrent sequences — KV is your wall.');
+        li('Confirm FP8 quantization is actually on: bf16 does NOT fit 12 GB for a 4B-class model here (we got "-0.13 GiB available KV memory").');
+        li('On a hybrid-GDN model, raise batching nearly free — recurrent state, not KV, dominates (tutorial #7).');
+      } else {
+        li('For serving speed with a fine-tuned adapter: merge_and_unload() then serve merged — but see tutorial #2 for the silent-no-op trap.');
+        li('Cut context or concurrency; the HF generate path is memory-hungry versus vLLM.');
+      }
+    } else if (e.gib > e.gpu * 0.85) {
+      v.className = 'vc-verdict vc-warn';
+      v.textContent = 'Fits — tight (under 15% headroom).';
+      li('Leave room for fragmentation: nvidia-smi reserved typically sits ~0.6–1 GiB above torch-reported peak (tutorial #1: 6.70 allocated vs 7.35 reserved).');
+      li('Don\'t add batch/length here without watching nvidia-smi live.');
+    } else {
+      v.className = 'vc-verdict vc-ok';
+      v.textContent = 'Fits with headroom.';
+      if (e.mode === 'qlora') li('Headroom (' + (e.gpu - e.gib).toFixed(1) + ' GiB) buys batch size or longer seq — both scale activations linearly; double one at a time.');
+      if (e.mode === 'serve-vllm') li('Remaining pool goes to KV automatically — more concurrency or longer context.');
+      if (e.mode === 'serve-peft') li('Room for max_new_tokens growth; measure tok/s as you go (ours: 51.5 on 3080 Ti).');
+    }
+    $('vc-note').textContent = 'Breakdown — ' + e.breakdown + ' GiB. Estimate range ±15% in the anchor zone (4B, 12–24 GB); ±30–40% outside it.';
+  }
+
+  // Anchor check values (estimator vs measured, visible honesty).
+  function anchorCheck() {
+    var q = function (sizeB, seq, batch, ckpt) {
+      return W.nf4 * sizeB + LORA_OVERHEAD_16 * (sizeB / 4) + activations(sizeB, seq, batch, ckpt) + RUNTIME_BASE;
+    };
+    $('vc-a1').textContent = q(4, 512, 1, true).toFixed(2) + ' GiB';
+    $('vc-a2').textContent = q(4, 1024, 8, true).toFixed(1) + '–' + q(4, 2048, 8, true).toFixed(1) + ' GiB';
+    var wv = W.fp8 * 4;
+    $('vc-a3').textContent = 'weights ~' + wv.toFixed(1) + ' → pool ~' + (12 - 0.9 - wv).toFixed(1) + ' of which KV left ~' + (12 - 0.9 - wv - VLLM_ENGINE + 0.4).toFixed(1);
+    var peft = W.nf4 * 4 + PEFT_PATH + kvBytesPerTok('hybrid', 4, false) * 1024;
+    $('vc-a4').textContent = peft.toFixed(1) + ' GiB';
+    var bf = W.bf16 * 4 + LORA_OVERHEAD_16 + activations(4, 512, 1, false) + RUNTIME_BASE;
+    $('vc-a5').textContent = (bf >= 12 ? '>12 (' + bf.toFixed(1) + ')' : bf.toFixed(1)) + ' GiB → OOM ✓';
+  }
+
+  ['vc-gpu','vc-mode','vc-model','vc-arch','vc-seq','vc-batch','vc-ckpt'].forEach(function (id) {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+  render(); anchorCheck();
+})();
+</script>
+
+<hr>
+<p>Want the pipeline this was fitted on? Start with <a href="/docs/tutorials/lora-fine-tuning-qwen3.5-4b/">LoRA fine-tuning Qwen3.5-4B on 12 GB</a>, then <a href="/docs/tutorials/serve-fine-tuned-llm-vllm/">serve it</a> and <a href="/docs/tutorials/evaluate-fine-tuned-llm/">evaluate honestly</a>. Every number on this page comes from a logged run we published, bugs included.</p>

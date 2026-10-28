@@ -22,11 +22,14 @@ menu:
     - name: Tutorials
       pageRef: /docs/tutorials
       weight: 1
+    - name: VRAM Calculator
+      pageRef: /tools/vram-calculator
+      weight: 2
     - name: About
       pageRef: /about
-      weight: 2
-    - name: Search
       weight: 3
+    - name: Search
+      weight: 4
       params:
         type: search
     - name: GitHub
