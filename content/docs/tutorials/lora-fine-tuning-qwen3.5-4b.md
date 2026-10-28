@@ -346,6 +346,7 @@ You loaded the multimodal wrapper (`Qwen3_5ForConditionalGeneration`) instead of
 - **Try different LoRA ranks.** `r=8` is often sufficient for domain adaptation; `r=32` or `r=64` for more complex tasks.
 - **Go bigger with more VRAM.** The 9B sibling is the natural next model — it needs more than 12 GB for comfortable training (see the ceiling experiment in section 4).
 - **Serve the model.** Once you have a working adapter, the natural next step is serving it as a production API with [vLLM](https://docs.vllm.ai/).
+- **Harden your workflow.** Before your next long run, read [The Silent Failure Handbook](../silent-failure-handbook/) — the fifteen-minute pre-flight checklist would have caught most of what cost us hours.
 
 ---
 

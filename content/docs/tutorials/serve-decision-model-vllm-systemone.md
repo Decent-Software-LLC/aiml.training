@@ -2,6 +2,7 @@
 title: "Inside vLLM's /v1/systemone: Decision Serving, and Why Your Fine-Tuned Classifier Wasn't Invited"
 slug: "serve-decision-model-vllm-systemone"
 prev: docs/tutorials/fine-tune-decision-router
+next: docs/tutorials/silent-failure-handbook
 sidebar:
   open: true
 description: "vLLM 0.32 ships a native structured-decision endpoint — three questions answered in three output tokens with per-option probabilities and calibration diagnostics. We got it live on a 12 GB card, then tried to ride it with the router LoRA from tutorial #6 and crashed into an architecture gate, a silent merge no-op, and a checkpoint with no lm_head. label_mass caught all of it."
@@ -291,5 +292,6 @@ Grab `systemone_demo.py` and point it at any instruct model that passes the gate
 - The training side of this story: [Teach a Decision Model Its Tribal Knowledge](../fine-tune-decision-router/) — where the 120/120 router and its readout machinery come from.
 - Merge mechanics under vLLM, including the original silent no-op: [End to End: Train, Verify, Merge, Serve](../end-to-end-lora-pipeline/).
 - Baseline serving anatomy if `/v1/systemone` isn't available on your version: [Serve a Fine-Tuned LLM with vLLM](../serve-fine-tuned-llm-vllm/).
+- The cross-stage collection of every silent failure above, with pre-flight checks: [The Silent Failure Handbook](../silent-failure-handbook/).
 
 *If the diagnostics don't agree with your eval set, believe the diagnostics — they were right before your eval set finished running.*

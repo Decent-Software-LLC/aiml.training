@@ -15,10 +15,10 @@
   data in aiml-tutorial-cards.html when it stops being true.
 */}}
 
-{{- $title := "Teach a Decision Model Its Tribal Knowledge" -}}
-{{- $meta := "New · pplx-decider · QLoRA · chance to 100%" -}}
-{{- $subtitle := "Two LoRA runs on one decision model, two truths: on benchmarks the teacher already knows, our adapter lost. On invented routing conventions it went from chance to 120/120 — after four silent bugs taught us how to measure learning itself." -}}
-{{- $link := "/docs/tutorials/fine-tune-decision-router/" -}}
+{{- $title := "The Silent Failure Handbook" -}}
+{{- $meta := "New · field guide · 10 bugs · 5-minute checks" -}}
+{{- $subtitle := "Ten bugs from our logged single-GPU runs that made dead experiments look successful — the zero-step trainer, inert checkpointing, the silent LoRA merge no-op. Each entry ships the five-minute check that catches it, and a 15-line pre-flight checklist." -}}
+{{- $link := "/docs/tutorials/silent-failure-handbook/" -}}
 
 <a
   href="{{ $link | relURL }}"

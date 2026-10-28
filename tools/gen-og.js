@@ -134,6 +134,21 @@ const items = [
     kicker: 'Tutorial · Pipeline',
     domain: 'aiml.training',
   }},
+  { file: 'fine-tune-decision-router', opts: {
+    title: 'Teach a Decision Model Its Tribal Knowledge: LoRA From Chance to 100%',
+    kicker: 'Tutorial · Fine-tune',
+    domain: 'aiml.training',
+  }},
+  { file: 'serve-decision-model-vllm-systemone', opts: {
+    title: "Inside vLLM's /v1/systemone: Decision Serving on One GPU",
+    kicker: 'Tutorial · Serve',
+    domain: 'aiml.training',
+  }},
+  { file: 'silent-failure-handbook', opts: {
+    title: 'The Silent Failure Handbook: 10 Bugs That Faked Success on One GPU',
+    kicker: 'Field guide · Verification',
+    domain: 'aiml.training',
+  }},
 ];
 
 for (const it of items) render(it.file, it.opts, outDir);
