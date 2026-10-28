@@ -256,7 +256,7 @@ These are not estimates — they are the measured results of running the script 
 | Peak training VRAM | 6.70 GB |
 | nvidia-smi reserved at peak | 7.35 GB |
 
-**Headroom on 12 GB:** roughly half the card sits idle at the peak. That is what lets you raise `SEQ_LENGTH` or add an eval loop without OOM on this hardware.
+**Headroom on 12 GB:** roughly half the card sits idle at the peak. That is what lets you raise `SEQ_LENGTH` or add an eval loop without OOM on this hardware. Planning a different model size or batch? Our free [VRAM calculator](/tools/vram-calculator/) is fitted to exactly these runs (plus tutorial #6's batch-8 point) and tells you what fits before you burn an hour on an OOM.
 
 **Why 4B, not bigger?** We ran the 9B sibling (`Qwen/Qwen3.5-9B`) as the ceiling experiment on the same card. Its NF4 load alone takes 7.92 GB, and forward + backward tops out at roughly 192 tokens of sequence before nvidia-smi hits 11.95 GB — i.e., it technically "fits" only for very short sequences with no room for a real batch. On a 12 GB card, 4B is the sweet spot: full 512-token training with half the VRAM left over.
 

@@ -102,3 +102,7 @@
   .pad-page { padding: 2rem; }
   .pad-hero { padding-top: 2.5rem; }
 }
+
+/* Landing-page free-tool strip (classes absent from the precompiled bundle) */
+.vc-tool-strip { text-decoration: none; transition: border-color .15s ease; }
+.vc-tool-strip:hover { border-color: hsl(var(--primary-hue) 100% 50% / 1); }

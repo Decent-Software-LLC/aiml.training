@@ -74,7 +74,7 @@ Qwen3.5-4B's weights are 8.4 GB in bf16. That already eats most of a 12 GB card 
 Available KV cache memory: -0.13 GiB
 ```
 
-**Negative.** bf16 does not fit. The options on a 12 GB card are: run a smaller model, use a smaller context, or quantize. We quantize — vLLM 0.32 supports `quantization="fp8"`, which uses Marlin FP8 kernels on Ampere+ and loads the weights in roughly half the memory:
+**Negative.** bf16 does not fit. (Want the same arithmetic for your card and context length? Our free [VRAM calculator](/tools/vram-calculator/) reproduces this verdict from the vLLM pool math below.) The options on a 12 GB card are: run a smaller model, use a smaller context, or quantize. We quantize — vLLM 0.32 supports `quantization="fp8"`, which uses Marlin FP8 kernels on Ampere+ and loads the weights in roughly half the memory:
 
 ```python
 """vLLM serving of Qwen3.5-4B — base model, FP8."""
