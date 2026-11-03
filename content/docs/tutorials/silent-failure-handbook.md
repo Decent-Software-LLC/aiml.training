@@ -13,6 +13,7 @@ author: "K J"
 categories: ["Tutorials"]
 tags: ["debugging", "fine-tuning", "qlora", "vllm", "12gb", "model-verification"]
 prev: docs/tutorials/serve-decision-model-vllm-systemone
+next: docs/tutorials/liquid-d1-decision-model-vllm
 sidebar:
   open: true
 headerBadge: "Field guide"
