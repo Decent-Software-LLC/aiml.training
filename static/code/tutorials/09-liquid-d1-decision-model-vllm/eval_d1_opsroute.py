@@ -9,7 +9,8 @@ Printed numbers in the article come from exactly this script:
     D1-3B ZERO-SHOT ACCURACY: 23/120 = 0.1917
     label_mass median=0.9067  confidence median=0.1462
 
-The point is the CONTRAST: at-chance accuracy with honest low confidence.
+The point is the CONTRAST: near-chance accuracy (19.2% vs a 12.5% floor,
+eight squads) with honest low confidence.
 If label_mass is low instead, you are evaluating a broken readout, not a
 model -- see tutorial #7 before trusting anything.
 

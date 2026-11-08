@@ -33,7 +33,7 @@ Then we ran it — untrained, zero-shot — on the frozen OPS-ROUTE test set fro
 | pplx-decider + our LoRA | gated out (501) | **120/120** | n/a (custom readout) |
 | **d1-3B (stock)** | **invited, first-class** | **23/120** | label_mass 0.99, confidence median **0.146** |
 
-A purpose-built, vendor-benchmarked decision model scored **at chance** on our domain. But unlike the broken readout in #7, d1 *knew it*: median confidence 0.146 across 120 guesses. That contrast — invited-but-untrained vs trained-but-gated, fake certainty vs honest uncertainty — is the whole article. **Fine-tuning is still the moat.**
+A purpose-built, vendor-benchmarked decision model scored **19.2% against a 12.5% chance floor** on our domain — above chance, nowhere near usable. But unlike the broken readout in #7, d1 *knew it*: median confidence 0.146 across 120 guesses, against a 0.125 uniform floor. That contrast — invited-but-untrained vs trained-but-gated, fake certainty vs honest uncertainty — is the whole article. **Fine-tuning is still the moat.**
 
 ## What d1 is, and what it costs
 
@@ -121,7 +121,9 @@ Notice what the score question does: it doesn't pick a bucket, it returns the *e
 
 Vendor benchmarks say d1-3B is strong at decisions (Liquid's Decision Bench: 83.6). So we ran it against the one benchmark we own: the **OPS-ROUTE frozen test split** from tutorial #6 — 120 on-call incidents routed by a hidden service×region chart with priority overrides, using team codenames no pretrained model has ever seen. The dataset generator is public; the point of the design was that the routing knowledge is *only* learnable from labelled examples.
 
-`eval_d1_opsroute.py` posts each incident as a `choice` question over the four squads. Result: **23/120 = 19.2%** — at or below chance for a 4-way task.
+`eval_d1_opsroute.py` posts each incident as a `choice` question over **all eight squads** — the full team dictionary, so the chance floor is 12.5%. Result: **23/120 = 19.2%** — modestly above chance (about 2.2 sigma), nowhere near usable.
+
+*Correction (Nov 9): an earlier version of this article described the task as 4-way. The eval passes all eight squads, so the floor is 12.5%, not 25%. The conclusion survives — 19.2% is not a deployable router — and the calibration point actually sharpens: median confidence 0.146 against a 0.125 uniform floor is near-uniform uncertainty, exactly what an honest model should output on knowledge it doesn't have.*
 
 But look at the calibration, because this is where the article earns its keep:
 
