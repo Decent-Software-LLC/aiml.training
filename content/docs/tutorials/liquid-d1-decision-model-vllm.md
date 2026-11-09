@@ -2,6 +2,7 @@
 title: "The Decision Model That Got Invited: Liquid d1 on vLLM's /v1/systemone (and Why It Still Failed Our Benchmark)"
 slug: "liquid-d1-decision-model-vllm"
 prev: docs/tutorials/silent-failure-handbook
+next: docs/tutorials/fine-tune-d1-decision-model-vllm
 sidebar:
   open: true
 description: "vLLM 0.33 whitelists Liquid's d1-3B for native decision serving — choice, yes/no, and score questions answered with honest calibration diagnostics. We served it on a 12 GB card, watched it route a support ticket at 0.98 confidence, then ran it on the frozen OPS-ROUTE test set from tutorial #6: 23/120. Being a real decision model gets you the endpoint. It does not get you your domain."

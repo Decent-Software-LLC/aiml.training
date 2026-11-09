@@ -15,10 +15,10 @@
   data in aiml-tutorial-cards.html when it stops being true.
 */}}
 
-{{- $title := "The Decision Model That Got Invited" -}}
-{{- $meta := "New · Liquid d1 · vLLM 0.33 · 12 GB" -}}
-{{- $subtitle := "A real decision model, natively served on /v1/systemone: routes a support ticket at 0.98 with honest diagnostics. Then the same model scores 23/120 on our frozen benchmark — barely above the 12.5% chance floor, and it knows it. Being invited gets you the endpoint; fine-tuning gets you the domain." -}}
-{{- $link := "/docs/tutorials/liquid-d1-decision-model-vllm/" -}}
+{{- $title := "Trained AND Invited" -}}
+{{- $meta := "New · d1-3B LoRA · native /v1/systemone · 12 GB" -}}
+{{- $subtitle := "The fourth cell of the two-axis map is measured: a rank-16 LoRA on the whitelisted decision architecture, merged into a native checkpoint, scores 119/120 through vLLM's decision endpoint with label_mass 0.9999 — on one RTX 3080 Ti. Plus the four assertion gates that caught namespace bugs before they could silently corrupt the merge." -}}
+{{- $link := "/docs/tutorials/fine-tune-d1-decision-model-vllm/" -}}
 
 <a
   href="{{ $link | relURL }}"
