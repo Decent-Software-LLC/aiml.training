@@ -15,10 +15,10 @@
   data in aiml-tutorial-cards.html when it stops being true.
 */}}
 
-{{- $title := "Trained AND Invited" -}}
-{{- $meta := "New · d1-3B LoRA · native /v1/systemone · 12 GB" -}}
-{{- $subtitle := "The fourth cell of the two-axis map is measured: a rank-16 LoRA on the whitelisted decision architecture, merged into a native checkpoint, scores 119/120 through vLLM's decision endpoint with label_mass 0.9999 — on one RTX 3080 Ti. Plus the four assertion gates that caught namespace bugs before they could silently corrupt the merge." -}}
-{{- $link := "/docs/tutorials/fine-tune-d1-decision-model-vllm/" -}}
+{{- $title := "Two Stacks, One Decision" -}}
+{{- $meta := "New · HF pipeline('decision') vs vLLM /v1/systemone · 12 GB" -}}
+{{- $subtitle := "Same frozen benchmark, both stacks, one box: the support matrices are mirror images — and HF's acceptance of pplx-decider is a silent failure. A randomly initialized decision head (MISSING: proj.bias) scores exactly the 12.5% chance floor while the pipeline works perfectly. vLLM's 501 is the more honest error." -}}
+{{- $link := "/docs/tutorials/hf-decision-pipeline-vs-vllm-systemone/" -}}
 
 <a
   href="{{ $link | relURL }}"

@@ -7,7 +7,7 @@ sidebar:
 description: "Hugging Face formalized decision models in November with pipeline('decision'), AutoModelForDecision, and its own /v1/systemone server. We ran the same frozen OPS-ROUTE benchmark through both stacks on the same 12 GB box. The support matrices are mirror images — and HF's acceptance of Perplexity's pplx-decider turned out to be a silent failure: a randomly initialized decision head scoring exactly the chance floor."
 date: 2026-11-18
 lastmod: 2026-11-18
-draft: true
+draft: false
 weight: 11
 type: docs
 images: ["og/hf-decision-pipeline-vs-vllm-systemone.png"]
