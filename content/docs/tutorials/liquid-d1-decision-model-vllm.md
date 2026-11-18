@@ -45,6 +45,8 @@ Liquid AI ships d1 as a "decision model": instead of generating an answer, it re
 
 One pin warning before you copy the demo: **the newer d1-2B (Oct 27) does not work on vLLM 0.33.** Its `config.json` declares architecture `D1Model` / model type `lfm3_vl`, and neither appears in 0.33's model registry or its `READ_STRATEGIES` table. Liquid's own runtime matrix says "coming soon" for vLLM. This is the general rule from the [Silent Failure Handbook](../silent-failure-handbook/): check the checkpoint's declared architecture against the serving stack's whitelist *before* promising a demo. `curl https://huggingface.co/LiquidAI/d1-2B/raw/main/config.json` takes ten seconds and saves the afternoon.
 
+> **Update (Nov 18, 2026), re-probed on vLLM 0.34.0 stable:** still blocked, and now we can name the exact gap. 0.34 added `Lfm3ForCausalLM` and `Lfm3VlForConditionalGeneration` to the model registry — the LFM3 *backbone* around d1-2B is supported — but `D1Model` appears in neither the model registry nor `READ_STRATEGIES` (the decisions table still maps only `Lfm2VlForConditionalGeneration → LiquidStrategy`). vLLM resolves by architecture name, so the `model_type: lfm3_vl` fallback does not apply. The decision head itself is the missing registration. Re-run the ten-second check above before assuming this note is stale.
+
 ## Serving d1 on 12 GB
 
 The serve command is unremarkable, which is the point — no plugin, no custom head, no fork:
