@@ -12,9 +12,11 @@ weight: 10
 type: docs
 images: ["og/fine-tune-d1-decision-model-vllm.png"]
 toc: true
+categories: ["Tutorials"]
+tags: ["vllm", "fine-tuning", "lora", "decision-models", "liquid-ai", "12gb", "model-verification"]
 ---
 
-[Tutorial #9](/docs/tutorials/liquid-d1-decision-model-vllm/) ended on an uncomfortable number. Stock `LiquidAI/d1-3B` is the decision model vLLM actually invites through `/v1/systemone` — choice, yes/no, and score questions answered natively, with honest calibration diagnostics. On a frozen 120-example benchmark from [tutorial #6](/docs/tutorials/fine-tune-lora-decision-router/), it scored **23/120** against a 12.5% chance floor. A real decision head, honestly reporting near-uniform uncertainty on a task we can solve with a rank-8 adapter.
+[Tutorial #9](/docs/tutorials/liquid-d1-decision-model-vllm/) ended on an uncomfortable number. Stock `LiquidAI/d1-3B` is the decision model vLLM actually invites through `/v1/systemone` — choice, yes/no, and score questions answered natively, with honest calibration diagnostics. On a frozen 120-example benchmark from [tutorial #6](/docs/tutorials/fine-tune-decision-router/), it scored **23/120** against a 12.5% chance floor. A real decision head, honestly reporting near-uniform uncertainty on a task we can solve with a rank-8 adapter.
 
 This tutorial closes the loop: fine-tune the *whitelisted* architecture so the result is both **trained and invited**. Same box as every episode — a single RTX 3080 Ti (12 GB) — same pinned stack (vLLM 0.33 on a CUDA 13 wheel), same frozen OPS-ROUTE dataset from #6 so every number across the arc is comparable.
 
@@ -165,5 +167,5 @@ The scripts below reproduce every number in this post against the same frozen se
 
 - [Serve Decision Models on vLLM's /v1/systemone](/docs/tutorials/serve-decision-model-vllm-systemone/) — the 501 origin story and the raw-logprob verification layer
 - [The Decision Model That Got Invited](/docs/tutorials/liquid-d1-decision-model-vllm/) — stock d1-3B: the 23/120 foil
-- [Fine-Tune a Decision Router with LoRA](/docs/tutorials/fine-tune-lora-decision-router/) — the frozen dataset, the 120/120 trained-but-gated router
+- [Teach a Decision Model Its Tribal Knowledge](/docs/tutorials/fine-tune-decision-router/) — the frozen dataset, the 120/120 trained-but-gated router
 - [The Silent Failure Handbook](/docs/tutorials/silent-failure-handbook/) — the bug classes each gate in this post is auditing for

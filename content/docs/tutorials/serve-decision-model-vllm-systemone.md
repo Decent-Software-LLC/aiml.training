@@ -22,6 +22,8 @@ tags: ["vllm", "serving", "decision-models", "qwen3.5-4b", "12gb", "model-verifi
 
 ## The short version
 
+> **A note on the term.** `/v1/systemone` is vLLM's *endpoint* name; the model category itself has settled on **decision model** — Hugging Face [made it official in its blog](https://huggingface.co/blog/decision) (Nov 10) with `pipeline("decision")` covering the same three question types (`choice`, `yes/no`, ordered score) and a hub tag. This post keeps the endpoint name where it's literal and uses "decision model" everywhere else.
+
 vLLM 0.32 quietly shipped something that looks aimed exactly at readers of [tutorial #6](../fine-tune-decision-router/): a first-class endpoint for *structured decisions*. You POST a state plus typed questions (`choice`, `yes/no`, ordered `score`), and it answers every question by reading the probability of each option's label token — no generation, no parsing, no regex. Our demo call asked three questions at once and the server answered them for **three output tokens total**, returning per-option probabilities and a calibration diagnostic per question.
 
 Then we tried to serve the routing LoRA we trained in tutorial #6 on the same endpoint and it fell apart in three independent ways:

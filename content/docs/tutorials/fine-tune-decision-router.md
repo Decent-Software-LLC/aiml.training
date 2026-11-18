@@ -21,6 +21,8 @@ tags: ["fine-tuning", "lora", "qlora", "decision-models", "qwen3.5-4b", "12gb", 
 
 ## The short version
 
+> **A note on the term.** We've been calling these "System One" models after vLLM's endpoint name; the field has settled on **decision model** — Hugging Face [formalized it in its official blog](https://huggingface.co/blog/decision) (Nov 10) with a first-class `pipeline("decision")` for exactly the three question types this site teaches (`choice`, `yes/no`, `score`) and a hub tag. Same thing; we'll use the standard term from here on.
+
 Fine-tuning gets sold as "make the model better." It doesn't. Fine-tuning **adds knowledge a model cannot obtain any other way** — and where that knowledge is already implicit in pretraining, a LoRA can only add noise. We proved both halves of that sentence on one RTX 3080 Ti, same recipe, same 4-bit QLoRA config, twice:
 
 | Experiment | Stock model | Our LoRA | Verdict |
