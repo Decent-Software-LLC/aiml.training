@@ -2,6 +2,7 @@
 title: "Two Stacks, One Decision: HF's pipeline('decision') vs vLLM's /v1/systemone, Measured on the Same Models"
 slug: "hf-decision-pipeline-vs-vllm-systemone"
 prev: docs/tutorials/fine-tune-d1-decision-model-vllm
+next: docs/tutorials/amos-decision-model-vllm-native
 sidebar:
   open: true
 description: "Hugging Face formalized decision models in November with pipeline('decision'), AutoModelForDecision, and its own /v1/systemone server. We ran the same frozen OPS-ROUTE benchmark through both stacks on the same 12 GB box. The support matrices are mirror images — and HF's acceptance of Perplexity's pplx-decider turned out to be a silent failure: a randomly initialized decision head scoring exactly the chance floor."

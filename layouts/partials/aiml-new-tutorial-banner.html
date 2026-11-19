@@ -15,10 +15,10 @@
   data in aiml-tutorial-cards.html when it stops being true.
 */}}
 
-{{- $title := "Two Stacks, One Decision" -}}
-{{- $meta := "New · HF pipeline('decision') vs vLLM /v1/systemone · 12 GB" -}}
-{{- $subtitle := "Same frozen benchmark, both stacks, one box: the support matrices are mirror images — and HF's acceptance of pplx-decider is a silent failure. A randomly initialized decision head (MISSING: proj.bias) scores exactly the 12.5% chance floor while the pipeline works perfectly. vLLM's 501 is the more honest error." -}}
-{{- $link := "/docs/tutorials/hf-decision-pipeline-vs-vllm-systemone/" -}}
+{{- $title := "Invited at First Sight" -}}
+{{- $meta := "New · Amos 1: a third-party decision model vLLM serves natively · 12 GB" -}}
+{{- $subtitle := "Apache-2.0 on Qwen3.5, inside vLLM's decision guest list by construction: no patch, no merge, 617/617 tensors, live in 40 seconds. Then the frozen benchmark: 18/120 through vLLM, 19/120 through the authors' own server, 18 and 20 through their hosted 9B and 27B. The invitation is real; the domain knowledge still isn't." -}}
+{{- $link := "/docs/tutorials/amos-decision-model-vllm-native/" -}}
 
 <a
   href="{{ $link | relURL }}"
