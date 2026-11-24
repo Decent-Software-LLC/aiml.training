@@ -15,7 +15,8 @@
 </script>
 
 {{- /* Analytics: enable by setting params.analytics.provider in hugo.yaml.
-     Supported: "plausible" (with params.analytics.domain), "umami" (with params.analytics.websiteID).
+     Supported: "plausible" (with params.analytics.domain), "umami" (with params.analytics.websiteID),
+     "gtm" (with params.analytics.containerID, e.g. GTM-XXXXXXX).
      Umami defaults to the hosted cloud script; set params.analytics.src to override (e.g. self-hosted /umami.js).
      No provider set = no tracking script emitted. */ -}}
 {{- with site.Params.analytics -}}
@@ -24,6 +25,9 @@
   {{- else if eq .provider "umami" -}}
     {{- $src := .src | default "https://cloud.umami.is/script.js" -}}
     <script defer src="{{ $src }}" data-website-id="{{ .websiteID }}"></script>
+  {{- else if eq .provider "gtm" -}}
+    <script async src="https://www.googletagmanager.com/gtm.js?id={{ .containerID }}"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());</script>
   {{- end -}}
 {{- end -}}
 

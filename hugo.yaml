@@ -56,8 +56,8 @@ params:
     base: "https://github.com/Decent-Software-LLC/aiml.training/edit/main/content"
 
   analytics:
-    provider: umami
-    websiteID: "15a4fab2-30d1-425e-a937-98a4556dc8c1"
+    provider: gtm
+    containerID: "GTM-WBB7FF84"
 
   # Email capture (layouts/partials/aiml-email-capture.html).
   # `endpoint` is set -> the card renders a real form that POSTs to Formspree.
