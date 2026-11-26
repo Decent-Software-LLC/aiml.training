@@ -6,7 +6,7 @@ sidebar:
   open: true
 description: "The Amos 1 family (Apache-2.0, built on Qwen3.5) is the first third-party decision model whose architecture sits inside vLLM's READ_STRATEGIES guest list by construction — no patching, no merge gymnastics. We served amos-1-small natively on vLLM 0.34's /v1/systemone, verified the readout with a garbage-options control, and ran the frozen OPS-ROUTE benchmark through four paths: vLLM, the authors' own server, and their hosted medium and large. All four land near the 12.5% chance floor. The invitation is real; the domain knowledge still isn't."
 date: 2026-11-19
-lastmod: 2026-11-19
+lastmod: 2026-11-26
 draft: false
 weight: 12
 type: docs
@@ -114,6 +114,8 @@ vLLM's `label_mass` sums full-vocabulary probability on the label tokens; for Am
 | `amos.serve` (their pins, py3.12 venv) | 4.8 GiB | ~30 s |
 
 The 2B model fits either way with room to spare; the 9B medium would need the 24 GB class on this stack mix.
+
+> **Nov 26, 2026 note on `--gpu-memory-utilization 0.85`:** that's our measurement condition, and it's now a *deviation* from stock 0.34 behavior — the release flips the default to 1.0 with extensible KV cache (pool sized from free memory after warmup) and officially recommends dropping the flag ([release notes](https://github.com/vllm-project/vllm/releases/tag/v0.34.0)). For a one-token-per-question decision workload the pool size barely matters; keep an explicit value only when sharing the card or reproducing our 8.7 GiB resident figure. Related 0.34 traps for copy-pasters: `--block-size` default 16 → 64, and `huggingface_hub >= 2.0.0` is now mandatory.
 
 ## What this sets up
 

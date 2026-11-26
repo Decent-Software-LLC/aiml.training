@@ -7,7 +7,7 @@ sidebar:
   open: true
 description: "vLLM 0.33 whitelists Liquid's d1-3B for native decision serving — choice, yes/no, and score questions answered with honest calibration diagnostics. We served it on a 12 GB card, watched it route a support ticket at 0.98 confidence, then ran it on the frozen OPS-ROUTE test set from tutorial #6: 23/120. Being a real decision model gets you the endpoint. It does not get you your domain."
 date: 2026-11-03
-lastmod: 2026-11-03
+lastmod: 2026-11-26
 draft: false
 weight: 9
 type: docs
@@ -58,6 +58,8 @@ vllm serve LiquidAI/d1-3B \
   --max-model-len 4096 \
   --gpu-memory-utilization 0.85
 ```
+
+> **On vLLM 0.34 (Nov 26, 2026):** `--gpu-memory-utilization 0.85` is no longer the right reflex — 0.34 defaults it to **1.0** with extensible KV cache on, sizing the pool from memory free after warmup, and the official guidance is to drop the flag ([release notes](https://github.com/vllm-project/vllm/releases/tag/v0.34.0); verified against the release page, not re-run — the footprint table above stands on the 0.33 pin). Also new: default `--block-size` is 64 (was 16), and `huggingface_hub >= 2.0.0` + `tokenizers >= 0.23.3` are required. The 3.3 GiB KV headroom figure was our 0.85-util arithmetic; on stock 0.34 expect a bigger pool from the same card.
 
 `--logprobs-mode raw_logprobs` is the only decision-specific flag (the endpoint needs raw label probabilities; #7 covers why). Both decision endpoints are live on the server: `/v1/systemone` (vLLM-native) and the newer OpenAI-compatible `/v1/decisions`.
 

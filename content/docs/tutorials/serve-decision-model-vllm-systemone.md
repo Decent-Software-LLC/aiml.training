@@ -7,7 +7,7 @@ sidebar:
   open: true
 description: "vLLM 0.32 ships a native structured-decision endpoint — three questions answered in three output tokens with per-option probabilities and calibration diagnostics. We got it live on a 12 GB card, then tried to ride it with the router LoRA from tutorial #6 and crashed into an architecture gate, a silent merge no-op, and a checkpoint with no lm_head. label_mass caught all of it."
 date: 2026-10-25
-lastmod: 2026-10-25
+lastmod: 2026-11-26
 draft: false
 weight: 7
 type: docs
@@ -37,6 +37,8 @@ Then we tried to serve the routing LoRA we trained in tutorial #6 on the same en
 The third row is the interesting one: `pplx-decider-flash-v1.2` ships **no `lm_head` at all** (its decisions come from a separate readout head in Perplexity's protocol format), so a naive first-token-logit read scores at chance — and the endpoint's own `label_mass` diagnostic screamed "this model is not deciding anything" without us running a single labeled test. Same species of lesson as tutorial #6: the instrumentation caught what accuracy alone would have missed.
 
 Everything below runs on the same single 12 GB RTX 3080 Ti as every other tutorial on this site (stack pins: torch 2.13.0+cu130, vLLM 0.32.0, transformers 5.19.0, peft 0.21.2).
+
+> **Update (Nov 26, 2026), serving on vLLM 0.34:** if you `pip install vllm` today you land on 0.34.x, where three defaults bite exactly the launch flags below ([release notes](https://github.com/vllm-project/vllm/releases/tag/v0.34.0), verified against the release page; the numbers here stand on the 0.32 pin). **(1)** `gpu_memory_utilization` now defaults to **1.0** with extensible KV cache on — the pool is sized from memory actually free after warmup, so drop the `--gpu-memory-utilization 0.92` rather than port it (it exists now mainly for shared cards). On a 11.6 GiB-class card that matters: keep `--enforce-eager` and `--language-model-only`, let the new allocator do its job. **(2)** Default `--block-size` 16 → 64; pass `--block-size 16` only if you must reproduce old KV behavior bit-for-bit. **(3)** `huggingface_hub >= 2.0.0` (plus `tokenizers >= 0.23.3`) is required — old frozen envs fail at import, not at serve. Nothing in the READ_STRATEGIES story changed on 0.34; we re-checked the guest list when probing d1-2B (#9's Nov 18 update has the diff).
 
 ## What `/v1/systemone` actually is
 

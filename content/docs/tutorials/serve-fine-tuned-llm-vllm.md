@@ -6,7 +6,7 @@ prev: docs/tutorials/lora-fine-tuning-qwen3.5-4b
 sidebar:
   open: true
 date: "2026-10-19T12:00:00Z"
-lastmod: "2026-10-19T12:00:00Z"
+lastmod: "2026-11-26T10:00:00Z"
 draft: false
 weight: 2
 type: docs
@@ -51,6 +51,8 @@ python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwe
 pip install "vllm==0.32.0" "transformers==5.19.0" "peft==0.21.2"
 # torch 2.13.0+cu130 was the version in our env — vLLM pins/installs its own torch.
 ```
+
+> **Update (Nov 26, 2026), if you install `pip install vllm` today:** you'll get 0.34.x, not our 0.32 pin, and three of its defaults change how this tutorial behaves (all from [the official 0.34.0 release notes](https://github.com/vllm-project/vllm/releases/tag/v0.34.0) — we verified the release page, not a re-run of these benchmarks, which stand on the pinned stack above). **(1)** `gpu_memory_utilization` now defaults to **1.0** with extensible KV cache on: the engine sizes the KV pool from memory actually free *after* warmup, so the recommendation is to **delete the flag entirely** rather than set 0.9 — bigger cache, more throughput, and no more guessing (opt back out with `--gpu-memory-utilization 0.9` only when sharing the card). **(2)** Default `--block-size` went 16 → 64 (pass `--block-size 16` for old behavior). **(3)** `huggingface_hub >= 2.0.0` is now required (with `tokenizers >= 0.23.3`) — on a frozen env image that surfaces as a resolver fight, not a clear error. Model Runner V1 is also gone (`VLLM_USE_V2_MODEL_RUNNER=0` now fails at startup); harmless here since we never set it. The FP8-Marlin path below is unaffected — what 0.34 removed was Marlin W4A8 input quantization (the `VLLM_MARLIN_INPUT_DTYPE` path), a different thing with a confusingly similar name.
 
 Before we serve anything, one honesty checkpoint, because it shapes everything below:
 
