@@ -113,7 +113,7 @@ vLLM's `label_mass` sums full-vocabulary probability on the label tokens; for Am
 | vLLM 0.34, 4096 ctx, 0.85 util | 8.7 GiB | ~40 s |
 | `amos.serve` (their pins, py3.12 venv) | 4.8 GiB | ~30 s |
 
-The 2B model fits either way with room to spare; the 9B medium would need the 24 GB class on this stack mix.
+The 2B model fits either way with room to spare; the 9B medium would need the 24 GB class on this stack mix. (Sizing a different card? The free [VRAM calculator](/tools/vram-calculator/) runs the same pool arithmetic for your GPU/context.)
 
 > **Nov 26, 2026 note on `--gpu-memory-utilization 0.85`:** that's our measurement condition, and it's now a *deviation* from stock 0.34 behavior — the release flips the default to 1.0 with extensible KV cache (pool sized from free memory after warmup) and officially recommends dropping the flag ([release notes](https://github.com/vllm-project/vllm/releases/tag/v0.34.0)). For a one-token-per-question decision workload the pool size barely matters; keep an explicit value only when sharing the card or reproducing our 8.7 GiB resident figure. Related 0.34 traps for copy-pasters: `--block-size` default 16 → 64, and `huggingface_hub >= 2.0.0` is now mandatory.
 
